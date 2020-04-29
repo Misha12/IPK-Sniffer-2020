@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using IPK_Sniffer.Services.InterfaceListing;
+using IPK_Sniffer.Services.Sniffer;
 using System;
 using System.Collections.Generic;
 
@@ -9,15 +10,19 @@ namespace IPK_Sniffer
     {
         public static void Main(string[] args)
         {
+            Console.CancelKeyPress += Console_CancelKeyPress;
+
             var parser = new Parser(config => config.IgnoreUnknownArguments = true);
 
             parser.ParseArguments<Options>(args)
-                .WithParsed(Run)
+                .WithParsed(Sniffer.Process)
                 .WithNotParsed(ArgumentParseError);
         }
 
-        private static void Run(Options options)
+        private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
+            Sniffer.Dispose();
+            Environment.Exit(AppCodes.Success);
         }
 
         /// <summary>
