@@ -38,7 +38,7 @@ namespace IPK_Sniffer.Services.InterfaceListing
                         continue;
 
                     if (ipv4Adresses.Count > 0)
-                        builder.Append("Addresseses (IPv4): ").AppendLine(string.Join(", ", ipv4Adresses.Select(FormatIPAddress).Where(o => o != null)));
+                        builder.Append("Addresses (IPv4): ").AppendLine(string.Join(", ", ipv4Adresses.Select(FormatIPAddress).Where(o => o != null)));
                     if (ipv6Adresses.Count > 0)
                         builder.Append("Addresses (IPv6): ").AppendLine(string.Join(", ", ipv6Adresses.Select(FormatIPAddress).Where(o => o != null)));
 
