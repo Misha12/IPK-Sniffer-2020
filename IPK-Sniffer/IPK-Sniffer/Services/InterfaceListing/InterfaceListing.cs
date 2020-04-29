@@ -23,7 +23,7 @@ namespace IPK_Sniffer.Services.InterfaceListing
             {
                 try
                 {
-                    device.Open();
+                    device.Open(DeviceMode.Promiscuous);
 
                     var builder = new StringBuilder()
                         .Append("Name: ").AppendLine(device.Name);
