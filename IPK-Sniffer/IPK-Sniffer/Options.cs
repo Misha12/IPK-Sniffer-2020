@@ -25,6 +25,6 @@ namespace IPK_Sniffer
         public bool CaptureAll => (!OnlyTCP && !OnlyUDP) || (OnlyTCP && OnlyUDP);
 
         [Option('n', HelpText = "Počet paketů, které se mají zobrazit.", Default = 1)]
-        public int PacketLimit { get; set; } = 1;
+        public int PacketCountLimit { get; set; } = 1;
     }
 }

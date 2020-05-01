@@ -24,8 +24,9 @@ namespace IPK_Sniffer.Services.Sniffer
 
             try
             {
-                Device.Open(DeviceMode.Promiscuous);
                 Device.OnPacketArrival += Device_OnPacketArrival;
+                
+                Device.Open(DeviceMode.Promiscuous);
                 Device.Capture();
             }
             catch (PcapException ex)
@@ -46,9 +47,7 @@ namespace IPK_Sniffer.Services.Sniffer
             if (!IsSupportedPacket(packet))
                 return;
 
-            EthernetPacketPrinter.PrintPacket(packet);
-
-            if (++PacketCounter == Options.PacketLimit)
+            if (EthernetPacketPrinter.PrintPacket(packet) && ++PacketCounter == Options.PacketCountLimit)
             {
                 Dispose();
                 Environment.Exit(AppCodes.Success);
