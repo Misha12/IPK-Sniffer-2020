@@ -16,7 +16,7 @@ namespace IPK_Sniffer.Services.Sniffer.Printer
             var source = PrinterHelper.TryGetHostname(networkLayer.SourceAddress);
             var destination = PrinterHelper.TryGetHostname(networkLayer.DestinationAddress);
 
-            Console.WriteLine($"{DateTime.Now.TimeOfDay} {source} : {transportLayer.SourcePort} > {destination} : {transportLayer.DestinationPort}");
+            Console.WriteLine($"{DateTime.Now.TimeOfDay} {source} : {transportLayer.SourcePort} > {destination} : {transportLayer.DestinationPort}\n");
             PrinterHelper.PrintPacketData(packet);
             Console.WriteLine();
 
@@ -36,7 +36,7 @@ namespace IPK_Sniffer.Services.Sniffer.Printer
                 var source = PrinterHelper.TryGetHostname(networkLayer.SourceAddress);
                 var destination = PrinterHelper.TryGetHostname(networkLayer.DestinationAddress);
 
-                Console.WriteLine($"{DateTime.Now.TimeOfDay} (ICMP) {source} > {destination}");
+                Console.WriteLine($"{DateTime.Now.TimeOfDay} (ICMP) {source} > {destination}\n");
                 PrinterHelper.PrintPacketData(packet);
                 Console.WriteLine();
 
