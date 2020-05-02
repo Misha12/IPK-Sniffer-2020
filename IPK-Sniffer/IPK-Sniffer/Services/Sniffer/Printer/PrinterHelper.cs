@@ -6,33 +6,18 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IPK_Sniffer.Services.Sniffer
+namespace IPK_Sniffer.Services.Sniffer.Printer
 {
-    public static class EthernetPacketPrinter
+    public static class PrinterHelper
     {
-        public static bool PrintPacket(EthernetPacket packet)
-        {
-            if (!(packet.PayloadPacket is IPPacket networkLayer) || !(networkLayer.PayloadPacket is TransportPacket transportLayer))
-                return false;
-
-            var source = networkLayer.SourceAddress;
-            var destination = networkLayer.DestinationAddress;
-
-            Console.WriteLine($"{DateTime.Now.TimeOfDay} {TryGetHostname(source)} : {transportLayer.SourcePort} > {TryGetHostname(destination)} : {transportLayer.DestinationPort}");
-
-            Print(packet);
-            Console.WriteLine();
-            return true;
-        }
-
         /// <summary>
         /// Získání doménového názvu z IP adresy.
         /// </summary>
         /// <remarks>
-        /// Zdroj: IPK 1. Projekt HTTP Server/DNS Resolver (Halabica Michal)
+        /// Zdroj: IPK 1. Projekt HTTP Server/DNS Resolver (Halabica Michal (xhalab00))
         /// Soubor: src/Resolver/Services/DnsResolveService.cs
         /// </remarks>
-        private static string TryGetHostname(IPAddress address)
+        public static string TryGetHostname(IPAddress address)
         {
             var task = Task.Run(() =>
             {
@@ -61,7 +46,10 @@ namespace IPK_Sniffer.Services.Sniffer
             return task.Wait(800) ? task.Result : address.ToString();
         }
 
-        private static void Print(EthernetPacket packet)
+        /// <summary>
+        /// Vypis obsahu packetu.
+        /// </summary>
+        public static void PrintPacketData(EthernetPacket packet)
         {
             var buffer = new StringBuilder();
             var ascii = new StringBuilder();

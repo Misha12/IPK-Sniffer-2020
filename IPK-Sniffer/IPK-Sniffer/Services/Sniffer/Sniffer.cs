@@ -33,7 +33,7 @@ namespace IPK_Sniffer.Services.Sniffer
 
             Device.OnPacketArrival += Device_OnPacketArrival;
 
-            Device.Open(DeviceMode.Promiscuous);
+            Device.Open(DeviceMode.Promiscuous, 100);
             Device.Capture();
         }
 
@@ -42,10 +42,6 @@ namespace IPK_Sniffer.Services.Sniffer
         /// </summary>
         private static void Device_OnPacketArrival(object sender, CaptureEventArgs e)
         {
-            // TODO: Async
-            // TODO: Doplnit odkazy na použití sharpcap knihovny.
-            // TODO: ICMP
-
             if (e.Packet.LinkLayerType != LinkLayers.Ethernet)
                 return;
 
@@ -54,7 +50,15 @@ namespace IPK_Sniffer.Services.Sniffer
             if (!IsSupportedPacket(packet))
                 return;
 
-            if (EthernetPacketPrinter.PrintPacket(packet) && ++PacketCounter == Options.PacketCountLimit)
+            var ipPacket = packet.PayloadPacket as IPPacket;
+
+            bool success = false;
+            if (ipPacket.Protocol == ProtocolType.Tcp || ipPacket.Protocol == ProtocolType.Udp)
+                success = Printer.Printer.PrintTcpAndUdpPackets(packet);
+            else if (ipPacket.Protocol == ProtocolType.Icmp || ipPacket.Protocol == ProtocolType.IcmpV6)
+                success = Printer.Printer.PrintICMPPackets(packet);
+
+            if (success && ++PacketCounter == Options.PacketCountLimit)
             {
                 DisposeDevice();
                 Environment.Exit(AppCodes.Success);
@@ -63,8 +67,7 @@ namespace IPK_Sniffer.Services.Sniffer
 
         private static void SetDevice(string name)
         {
-            var devices = CaptureDeviceList.New();
-            var device = devices.FirstOrDefault(o => o.Name == name);
+            var device = CaptureDeviceList.New().FirstOrDefault(o => o.Name == name);
 
             if (device == null)
             {
@@ -88,10 +91,9 @@ namespace IPK_Sniffer.Services.Sniffer
             if (!packet.HasPayloadPacket || !(packet.PayloadPacket is IPPacket ipPacket))
                 return false;
 
-            if (Options.OnlyTCP && ipPacket.Protocol != ProtocolType.Tcp)
-                return false;
-
-            if (Options.OnlyUDP && ipPacket.Protocol != ProtocolType.Udp)
+            var protocol = ipPacket.Protocol;
+            if (protocol != ProtocolType.Tcp && protocol != ProtocolType.Udp
+                && protocol != ProtocolType.Icmp && protocol != ProtocolType.IcmpV6)
                 return false;
 
             if (Options.Port != null
@@ -100,7 +102,19 @@ namespace IPK_Sniffer.Services.Sniffer
                 && transportPacket.DestinationPort != Options.Port.Value)
                 return false;
 
-            return true;
+            if (!Options.OnlyICMP && !Options.OnlyTCP && !Options.OnlyUDP)
+                return true;
+
+            if (Options.OnlyTCP && ipPacket.Protocol == ProtocolType.Tcp)
+                return true;
+
+            if (Options.OnlyUDP && ipPacket.Protocol == ProtocolType.Udp)
+                return true;
+
+            if (Options.OnlyICMP && (ipPacket.Protocol == ProtocolType.Icmp || ipPacket.Protocol == ProtocolType.IcmpV6))
+                return true;
+
+            return false;
         }
     }
 }

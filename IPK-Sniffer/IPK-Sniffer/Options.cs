@@ -13,16 +13,14 @@ namespace IPK_Sniffer
         [Option('p', HelpText = "Omezení filtrování paketů na zadané porty.")]
         public int? Port { get; set; }
 
-        [Option('t', "tcp", HelpText = "Omezení filtrování paketů pouze na TCP spojení.")]
+        [Option('t', "tcp", HelpText = "Omezení filtrování paketů pouze na TCP protokol.")]
         public bool OnlyTCP { get; set; }
 
-        [Option('u', "udp", HelpText = "Omezení filtrování paketů pouze na UDP spojení.")]
+        [Option('u', "udp", HelpText = "Omezení filtrování paketů pouze na UDP protokol.")]
         public bool OnlyUDP { get; set; }
 
-        /// <summary>
-        /// Pomocná vlastnost pro zjištění, zda má být filtrování jak na TCP, tak na UDP.
-        /// </summary>
-        public bool CaptureAll => (!OnlyTCP && !OnlyUDP) || (OnlyTCP && OnlyUDP);
+        [Option("icmp", HelpText = "Omezení filtrování packetů pouze na ICMP protokol.")]
+        public bool OnlyICMP { get; set; }
 
         [Option('n', HelpText = "Počet paketů, které se mají zobrazit.", Default = 1)]
         public int PacketCountLimit { get; set; } = 1;
