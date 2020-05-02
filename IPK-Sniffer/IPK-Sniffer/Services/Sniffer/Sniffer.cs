@@ -1,20 +1,29 @@
 ﻿using PacketDotNet;
-using PacketDotNet.Tcp;
 using SharpPcap;
 using SharpPcap.LibPcap;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace IPK_Sniffer.Services.Sniffer
 {
-    // TODO: Komentáře.
+    /// <summary>
+    /// Hlavní třída pro zachytávání packetů.
+    /// </summary>
     public static class Sniffer
     {
+        /// <summary>
+        /// Aktuální rozhraní, které poslouchá.
+        /// </summary>
         private static LibPcapLiveDevice Device { get; set; }
+
+        /// <summary>
+        /// Konfigurace apliakce.
+        /// </summary>
         private static Options Options { get; set; }
 
+        /// <summary>
+        /// Počítadlo zachycených packetů.
+        /// </summary>
         private static uint PacketCounter { get; set; }
 
         public static void Process(Options options)
@@ -22,23 +31,21 @@ namespace IPK_Sniffer.Services.Sniffer
             Options = options;
             SetDevice(options.Interface);
 
-            try
-            {
-                Device.OnPacketArrival += Device_OnPacketArrival;
-                
-                Device.Open(DeviceMode.Promiscuous);
-                Device.Capture();
-            }
-            catch (PcapException ex)
-            {
-                Console.WriteLine(ex.ToString());
-                // TODO: catch exceptions from pcap library.
-            }
+            Device.OnPacketArrival += Device_OnPacketArrival;
+
+            Device.Open(DeviceMode.Promiscuous);
+            Device.Capture();
         }
 
+        /// <summary>
+        /// Metoda, která je volána při zachycení události.
+        /// </summary>
         private static void Device_OnPacketArrival(object sender, CaptureEventArgs e)
         {
+            // TODO: Async
             // TODO: Doplnit odkazy na použití sharpcap knihovny.
+            // TODO: ICMP
+
             if (e.Packet.LinkLayerType != LinkLayers.Ethernet)
                 return;
 
@@ -49,7 +56,7 @@ namespace IPK_Sniffer.Services.Sniffer
 
             if (EthernetPacketPrinter.PrintPacket(packet) && ++PacketCounter == Options.PacketCountLimit)
             {
-                Dispose();
+                DisposeDevice();
                 Environment.Exit(AppCodes.Success);
             }
         }
@@ -68,7 +75,7 @@ namespace IPK_Sniffer.Services.Sniffer
             Device = device as LibPcapLiveDevice;
         }
 
-        public static void Dispose()
+        public static void DisposeDevice()
         {
             if (Device == null) return;
 

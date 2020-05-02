@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace IPK_Sniffer
 {
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {
@@ -21,7 +21,7 @@ namespace IPK_Sniffer
 
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
-            Sniffer.Dispose();
+            Sniffer.DisposeDevice();
             Environment.Exit(AppCodes.Success);
         }
 
@@ -32,12 +32,9 @@ namespace IPK_Sniffer
         {
             foreach (var error in errors)
             {
-                if (error is MissingValueOptionError valueError && valueError.NameInfo.NameText == "i")
-                {
-                    InterfaceListing.Process();
-                    break;
-                }
-                else if (error is MissingRequiredOptionError requiredError && requiredError.NameInfo.NameText == "i")
+                if ((error is MissingValueOptionError valueError && valueError.NameInfo.NameText == "i")
+                    || (error is MissingRequiredOptionError requiredError && requiredError.NameInfo.NameText == "i")
+                )
                 {
                     InterfaceListing.Process();
                     break;
