@@ -115,10 +115,10 @@ namespace IPK_Sniffer.Services.Sniffer
                 && protocol != ProtocolType.Icmp && protocol != ProtocolType.IcmpV6)
                 return false;
 
-            if (Options.Port != null
+            if (Options.Ports != null && Options.Ports.Any()
                 && ipPacket.PayloadPacket is TransportPacket transportPacket
-                && transportPacket.SourcePort != Options.Port.Value
-                && transportPacket.DestinationPort != Options.Port.Value)
+                && !Options.Ports.Contains(transportPacket.SourcePort)
+                && !Options.Ports.Contains(transportPacket.DestinationPort))
                 return false;
 
             if (!Options.OnlyICMP && !Options.OnlyTCP && !Options.OnlyUDP)

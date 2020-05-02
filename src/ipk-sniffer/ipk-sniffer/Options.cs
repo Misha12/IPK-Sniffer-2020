@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using System.Collections.Generic;
 
 namespace IPK_Sniffer
 {
@@ -10,8 +11,8 @@ namespace IPK_Sniffer
         [Option('i', HelpText = "Rozhraní, na kterém má aplikace naslouchat.", Required = true)]
         public string Interface { get; set; }
 
-        [Option('p', HelpText = "Omezení filtrování paketů na zadané porty.")]
-        public int? Port { get; set; }
+        [Option('p', HelpText = "Omezení filtrování paketů na zadané porty.", Required = false, Separator = ',')]
+        public IEnumerable<int> Ports { get; set; }
 
         [Option('t', "tcp", HelpText = "Omezení filtrování paketů pouze na TCP protokol.")]
         public bool OnlyTCP { get; set; }
@@ -23,6 +24,6 @@ namespace IPK_Sniffer
         public bool OnlyICMP { get; set; }
 
         [Option('n', HelpText = "Očekávaný počet packetů, které má aplikace zachytit.", Default = 1)]
-        public int PacketCountLimit { get; set; } = 1;
+        public uint PacketCountLimit { get; set; } = 1;
     }
 }
