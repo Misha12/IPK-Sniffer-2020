@@ -10,10 +10,13 @@ namespace IPK_Sniffer.Services.Sniffer.Printer
 {
     public static class PrinterHelper
     {
+        /// <summary>
+        /// DNS Cache.
+        /// </summary>
         private static Dictionary<string, string> DnsCache { get; set; } = new Dictionary<string, string>()
         {
             { IPAddress.Any.ToString(), IPAddress.Any.ToString() },
-            { IPAddress.IPv6Any.ToString(), IPAddress.Any.ToString() },
+            { IPAddress.IPv6Any.ToString(), IPAddress.IPv6Any.ToString() },
             { IPAddress.Broadcast.ToString(), IPAddress.Broadcast.ToString() }
         };
 
@@ -21,7 +24,8 @@ namespace IPK_Sniffer.Services.Sniffer.Printer
         /// Získání doménového názvu z IP adresy.
         /// </summary>
         /// <remarks>
-        /// Zdroj: IPK 1. Projekt HTTP Server/DNS Resolver (Halabica Michal (xhalab00))
+        /// Čerpáno z:
+        /// IPK 1. Projekt HTTP Server/DNS Resolver (Halabica Michal (xhalab00))
         /// Soubor: src/Resolver/Services/DnsResolveService.cs
         /// </remarks>
         public static string TryGetHostname(IPAddress address)
@@ -57,7 +61,7 @@ namespace IPK_Sniffer.Services.Sniffer.Printer
         /// </summary>
         public static void PrintPacketData(EthernetPacket packet)
         {
-            var buffer = new StringBuilder();
+            var hexa = new StringBuilder();
             var ascii = new StringBuilder();
 
             // Pocitame od 1, ale indexace se provadi od 0. To kvuli tomu, aby se spravne zarovnala data s odradkovanim ve vypisu.
@@ -66,7 +70,7 @@ namespace IPK_Sniffer.Services.Sniffer.Printer
                 var realIndex = i - 1;
 
                 var byteData = packet.BytesSegment.Bytes[realIndex];
-                buffer.Append(byteData.ToString("x").PadLeft(2, '0')).Append(' ');
+                hexa.Append(byteData.ToString("x").PadLeft(2, '0')).Append(' ');
 
                 /// <see cref="https://en.wikipedia.org/wiki/ASCII#Printable_characters"/>
                 if (byteData >= 0x21 && byteData < 0x7e)
@@ -77,28 +81,35 @@ namespace IPK_Sniffer.Services.Sniffer.Printer
                 // Každých 16 bajtů odřádkujeme.
                 if (i % 16 == 0)
                 {
-                    PrintLine(buffer, ascii, i, false);
+                    PrintLine(hexa, ascii, i, false);
                 }
                 else
                 {
                     if (i % 8 == 0)
                     {
-                        buffer.Append(' ');
+                        hexa.Append(' ');
                         ascii.Append(' ');
                     }
                 }
             }
 
-            PrintLine(buffer, ascii, packet.BytesSegment.Bytes.Length, true);
+            PrintLine(hexa, ascii, packet.BytesSegment.Bytes.Length, true);
         }
 
-        private static void PrintLine(StringBuilder builder, StringBuilder ascii, int processedBytes, bool last)
+        /// <summary>
+        /// Výpis jednoho řádku dat.
+        /// </summary>
+        /// <param name="hexa">Obsah množiny dat packetu v hexadecimálním formátu.</param>
+        /// <param name="ascii">Obsah množiny dat v packetu v ASCII.</param>
+        /// <param name="processedBytes">Počet vypsaných bajtů</param>
+        /// <param name="lastLine">Příznak, že se jedná o poslední řádek. Slouží ke správnému formátování.</param>
+        private static void PrintLine(StringBuilder hexa, StringBuilder ascii, int processedBytes, bool lastLine)
         {
-            int processedBytesCount = (processedBytes - (last ? 0 : 16)) / 16;
+            int processedBytesCount = (processedBytes - (lastLine ? 0 : 16)) / 16;
             /// <see cref="https://stackoverflow.com/a/11866297">
-            Console.WriteLine("0x{0:X3}0: {1} {2}", processedBytesCount, builder.ToString().PadRight(49, ' '), ascii.ToString());
+            Console.WriteLine("0x{0:X3}0: {1} {2}", processedBytesCount, hexa.ToString().PadRight(49, ' '), ascii.ToString());
 
-            builder.Clear();
+            hexa.Clear();
             ascii.Clear();
         }
     }

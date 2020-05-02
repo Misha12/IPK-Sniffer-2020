@@ -22,7 +22,7 @@ namespace IPK_Sniffer
         [Option("icmp", HelpText = "Omezení filtrování packetů pouze na ICMP protokol.")]
         public bool OnlyICMP { get; set; }
 
-        [Option('n', HelpText = "Počet paketů, které se mají zobrazit.", Default = 1)]
+        [Option('n', HelpText = "Očekávaný počet packetů, které má aplikace zachytit.", Default = 1)]
         public int PacketCountLimit { get; set; } = 1;
     }
 }

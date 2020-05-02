@@ -5,6 +5,9 @@ namespace IPK_Sniffer.Services.Sniffer.Printer
 {
     public static class Printer
     {
+        /// <summary>
+        /// Výpis TCP a UDP packetů.
+        /// </summary>
         public static bool PrintTcpAndUdpPackets(EthernetPacket packet)
         {
             if (!(packet.PayloadPacket is IPPacket networkLayer) || !(networkLayer.PayloadPacket is TransportPacket transportLayer))
@@ -20,6 +23,9 @@ namespace IPK_Sniffer.Services.Sniffer.Printer
             return true;
         }
 
+        /// <summary>
+        /// Výpis ICMP packetů.
+        /// </summary>
         public static bool PrintICMPPackets(EthernetPacket packet)
         {
             if (!(packet.PayloadPacket is IPPacket networkLayer))

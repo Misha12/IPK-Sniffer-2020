@@ -31,10 +31,24 @@ namespace IPK_Sniffer.Services.Sniffer
             Options = options;
             SetDevice(options.Interface);
 
-            Device.OnPacketArrival += Device_OnPacketArrival;
-
-            Device.Open(DeviceMode.Promiscuous, 100);
-            Device.Capture();
+            try
+            {
+                Device.OnPacketArrival += Device_OnPacketArrival;
+                Device.Open(DeviceMode.Promiscuous, 100);
+                Device.Capture();
+            }
+            catch (PcapException ex)
+            {
+                Console.Error.WriteLine("V knihovně LibPcap došlo k chybě");
+                Console.Error.WriteLine(ex.Message);
+                Environment.Exit(AppCodes.LibPcapError);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine("V aplikaci došlo k obecné chybě");
+                Console.Error.WriteLine(ex);
+                Environment.Exit(AppCodes.InternalError);
+            }
         }
 
         /// <summary>
@@ -72,7 +86,7 @@ namespace IPK_Sniffer.Services.Sniffer
 
         private static void SetDevice(string name)
         {
-            var device = CaptureDeviceList.New().FirstOrDefault(o => o.Name == name);
+            var device = CaptureDeviceList.New().FirstOrDefault(o => o.Name == name) as LibPcapLiveDevice;
 
             if (device == null)
             {
@@ -80,7 +94,7 @@ namespace IPK_Sniffer.Services.Sniffer
                 Environment.Exit(AppCodes.InvalidInterface);
             }
 
-            Device = device as LibPcapLiveDevice;
+            Device = device;
         }
 
         public static void DisposeDevice()
