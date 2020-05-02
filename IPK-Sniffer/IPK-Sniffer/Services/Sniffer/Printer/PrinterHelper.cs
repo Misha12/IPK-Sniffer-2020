@@ -1,6 +1,6 @@
 ﻿using PacketDotNet;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -10,6 +10,13 @@ namespace IPK_Sniffer.Services.Sniffer.Printer
 {
     public static class PrinterHelper
     {
+        private static Dictionary<string, string> DnsCache { get; set; } = new Dictionary<string, string>()
+        {
+            { IPAddress.Any.ToString(), IPAddress.Any.ToString() },
+            { IPAddress.IPv6Any.ToString(), IPAddress.Any.ToString() },
+            { IPAddress.Broadcast.ToString(), IPAddress.Broadcast.ToString() }
+        };
+
         /// <summary>
         /// Získání doménového názvu z IP adresy.
         /// </summary>
@@ -23,19 +30,18 @@ namespace IPK_Sniffer.Services.Sniffer.Printer
             {
                 try
                 {
-                    var noDnsAddresses = new[]
-                    {
-                        IPAddress.Any,
-                        IPAddress.IPv6Any,
-                        IPAddress.Broadcast,
-                        IPAddress.None
-                    };
+                    var addr = address.ToString();
 
-                    if (noDnsAddresses.Any(o => o.Equals(address)))
-                        return address.ToString();
+                    if (DnsCache.ContainsKey(addr))
+                        return DnsCache[addr];
 
                     var dns = Dns.GetHostEntry(address);
-                    return string.IsNullOrEmpty(dns.HostName) ? address.ToString() : dns.HostName;
+
+                    if (string.IsNullOrEmpty(dns.HostName))
+                        return addr;
+
+                    DnsCache.Add(addr, dns.HostName);
+                    return dns.HostName;
                 }
                 catch (SocketException ex) when (ex.SocketErrorCode == SocketError.HostNotFound)
                 {
@@ -43,7 +49,7 @@ namespace IPK_Sniffer.Services.Sniffer.Printer
                 }
             });
 
-            return task.Wait(800) ? task.Result : address.ToString();
+            return task.Wait(300) ? task.Result : address.ToString();
         }
 
         /// <summary>

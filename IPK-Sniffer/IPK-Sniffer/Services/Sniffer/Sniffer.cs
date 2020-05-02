@@ -42,10 +42,15 @@ namespace IPK_Sniffer.Services.Sniffer
         /// </summary>
         private static void Device_OnPacketArrival(object sender, CaptureEventArgs e)
         {
-            if (e.Packet.LinkLayerType != LinkLayers.Ethernet)
+            OnPacket(e.Packet);
+        }
+
+        private static void OnPacket(RawCapture capture)
+        {
+            if (capture.LinkLayerType != LinkLayers.Ethernet)
                 return;
 
-            var packet = Packet.ParsePacket(e.Packet.LinkLayerType, e.Packet.Data) as EthernetPacket;
+            var packet = Packet.ParsePacket(capture.LinkLayerType, capture.Data) as EthernetPacket;
 
             if (!IsSupportedPacket(packet))
                 return;
