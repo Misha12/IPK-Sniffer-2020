@@ -21,11 +21,18 @@ Při překladu si aplikace stáhne z [NuGet](https://www.nuget.org/) následují
 
 ## Překlad
 
-Aplikaci lze přeložit pomocí příkazu `make build`, který spouští následující příkat:
+Aplikaci lze přeložit pomocí příkazu `make build`, který spouští následující příkaz:
 ```sh
 dotnet build ipk-sniffer/ -c Release -o build/
 ```
 Tento příkaz vytvoří adresář `build`, ve kterém se bude nacházet přeložená aplikace. Současně, jak bylo zmíněno v předchozí kapitole, tak si překladač automaticky stáhne potřebné knihovny.
+
+## Úklid souborů
+
+Pro úklid souborů lze provést pomocí příkazu `make clean`, který spouští následující příkaz:
+```sh
+dotnet clean ipk-sniffer/ && rm -rf build/
+```
 
 ## Spuštění
 
