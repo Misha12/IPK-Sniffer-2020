@@ -37,8 +37,10 @@ namespace IPK_Sniffer
                 )
                 {
                     InterfaceListing.Process();
-                    break;
+                    Environment.Exit(AppCodes.Success);
                 }
+
+                Environment.Exit(AppCodes.InternalError);
             }
         }
     }

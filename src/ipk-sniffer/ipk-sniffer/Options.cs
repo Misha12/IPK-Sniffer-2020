@@ -24,6 +24,6 @@ namespace IPK_Sniffer
         public bool OnlyICMP { get; set; }
 
         [Option('n', HelpText = "Očekávaný počet packetů, které má aplikace zachytit.", Default = 1)]
-        public uint PacketCountLimit { get; set; } = 1;
+        public int PacketCountLimit { get; set; } = 1;
     }
 }
