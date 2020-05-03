@@ -15,7 +15,11 @@ namespace IPK_Sniffer
             var parser = new Parser(config => config.IgnoreUnknownArguments = true);
 
             parser.ParseArguments<Options>(args)
-                .WithParsed(Sniffer.Process)
+                .WithParsed((options) =>
+                {
+                    options.Validate();
+                    Sniffer.Process(options);
+                })
                 .WithNotParsed(ArgumentParseError);
         }
 

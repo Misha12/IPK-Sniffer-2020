@@ -24,5 +24,10 @@
         /// Obecná chyba v aplikaci.
         /// </summary>
         public const int InternalError = 99;
+
+        /// <summary>
+        /// Byl zadán neplatný port.
+        /// </summary>
+        public const int InvalidInputPort = 3;
     }
 }

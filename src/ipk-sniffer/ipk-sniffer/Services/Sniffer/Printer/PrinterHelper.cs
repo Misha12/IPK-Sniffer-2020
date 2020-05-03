@@ -44,7 +44,9 @@ namespace IPK_Sniffer.Services.Sniffer.Printer
                     if (string.IsNullOrEmpty(dns.HostName))
                         return addr;
 
-                    DnsCache.Add(addr, dns.HostName);
+                    if(!DnsCache.ContainsKey(addr))
+                        DnsCache.Add(addr, dns.HostName);
+
                     return dns.HostName;
                 }
                 catch (SocketException ex) when (ex.SocketErrorCode == SocketError.HostNotFound)

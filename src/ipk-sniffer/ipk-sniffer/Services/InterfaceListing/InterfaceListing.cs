@@ -66,20 +66,6 @@ namespace IPK_Sniffer.Services.InterfaceListing
         }
 
         /// <summary>
-        /// Formátování řetězce pro MAC Adresu (xx:xx:xx:xx:xx:xx)
-        /// </summary>
-        private static string FormatMacAddress(PhysicalAddress address)
-        {
-            var formatedFields = address.ToString()
-                .ToCharArray()
-                .Select((chr, idx) => idx % 2 == 1 ? chr + ":" : chr.ToString())
-                .ToArray();
-
-            var result = string.Concat(formatedFields);
-            return result.EndsWith(":") ? result[0..^1] : result;
-        }
-
-        /// <summary>
         /// Funkce pro formátování IP adresy do čitelného formátu.
         /// </summary>
         /// <param name="address">Adresa rozhraní.</param>

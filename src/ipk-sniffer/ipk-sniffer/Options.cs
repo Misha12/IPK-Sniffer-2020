@@ -1,5 +1,7 @@
 ﻿using CommandLine;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace IPK_Sniffer
 {
@@ -25,5 +27,20 @@ namespace IPK_Sniffer
 
         [Option('n', HelpText = "Očekávaný počet packetů, které má aplikace zachytit.", Default = 1)]
         public int PacketCountLimit { get; set; } = 1;
+
+        public void Validate()
+        {
+            if (Ports != null && Ports.Any())
+            {
+                foreach (var port in Ports)
+                {
+                    if(port < 0 || port > ushort.MaxValue)
+                    {
+                        Console.Error.WriteLine($"Port {port} je mimo rozsah platných portů.");
+                        Environment.Exit(AppCodes.InvalidInputPort);
+                    }
+                }
+            }
+        }
     }
 }
